@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import {
   Alert,
   Badge,
@@ -7,80 +8,125 @@ import {
   Divider,
   Pagination,
   Stack,
-  Typography,
+  Typography
 } from "@mui/material";
-import NotificationsIcon from "@mui/icons-material/Notifications";
 
-import { NotificationCard } from "../components/NotificationCard";
-import { NotificationFilter } from "../components/NotificationFilter";
-import { useNotifications } from "../hooks/useNotifications";
+import NotificationsIcon
+from "@mui/icons-material/Notifications";
+
+import { NotificationCard }
+from "../components/NotificationCard";
+
+import { NotificationFilter }
+from "../components/NotificationFilter";
+
+import { useNotifications }
+from "../hooks/useNotifications";
 
 export function NotificationsPage() {
-  const [filter, setFilter] = useState();
-  const [page, setPage] = useState("1");
 
-  const { notifications, totalPages, loading, error } = useNotifications();
+  const [filter, setFilter] =
+    useState("All");
 
-  const unreadCount = 2;
+  const [page, setPage] =
+    useState(1);
 
-  const handleFilterChange = (newFilter) => {
-
-  };
-
-  const handlePageChange = (_, newPage) => {
-
-  };
+  const {
+    notifications,
+    totalPages,
+    loading,
+    error
+  } =
+    useNotifications(
+      page,
+      filter
+    );
 
   return (
-    <Box sx={{ maxWidth: 720, mx: "auto", px: 2, py: 4 }}>
-      <Stack direction="row" alignItems="center" spacing={1.5} mb={3}>
-        <Badge badgeContent={unreadCount} color="primary" max={99}>
-          <NotificationsIcon sx={{ fontSize: 28 }} />
+
+    <Box
+      sx={{
+        maxWidth: 800,
+        mx: "auto",
+        p: 3
+      }}
+    >
+
+      <Stack
+        direction="row"
+        spacing={2}
+        alignItems="center"
+      >
+
+        <Badge
+          badgeContent={notifications.length}
+          color="primary"
+        >
+          <NotificationsIcon />
         </Badge>
-        <Typography variant="h5" fontWeight={700}>
+
+        <Typography variant="h5">
           Notifications
         </Typography>
+
       </Stack>
 
-      <Divider sx={{ mb: 3 }} />
+      <Divider sx={{ my: 3 }} />
 
-      <Box sx={{ marginBottom: 3 }}>
-        <NotificationFilter value={filter} onChange={handleFilterChange} />
-      </Box>
+      <NotificationFilter
+        value={filter}
+        onChange={setFilter}
+      />
 
-      {true && (
-        <Box display="flex" justifyContent="center" py={6}>
+      {loading && (
+        <Box sx={{ textAlign: "center" }}>
           <CircularProgress />
         </Box>
       )}
 
-      {!loading && error && (
-        <Alert severity="error">Failed to load notifications: {error}</Alert>
+      {error && (
+        <Alert severity="error">
+          {error}
+        </Alert>
       )}
 
-      {loading && !error && notifications.length == "0" && (
-        <Alert severity="info">Something message</Alert>
+      {!loading &&
+        notifications.length === 0 && (
+          <Alert severity="info">
+            No notifications found
+          </Alert>
       )}
 
-      {loading && !error && notifications.length > 0 && (
-        <Stack spacing={1.5}>
-          {notifications.map((n) => (
-            <></>
-          ))}
-        </Stack>
-      )}
+      <Stack spacing={2} mt={2}>
 
-      {!loading && (
-        <Box display="flex" justifyContent="center" mt={4}>
-          <Pagination
-            count={totalPages}
-            page={page}
-            onChange={handlePageChange}
-            color="primary"
-            shape="rounded"
+        {notifications.map(n => (
+
+          <NotificationCard
+            key={n.ID}
+            notification={n}
           />
-        </Box>
-      )}
+
+        ))}
+
+      </Stack>
+
+      {/* <Box
+        display="flex"
+        justifyContent="center"
+        mt={3}
+      > */}
+<Box sx={{ display: "flex", justifyContent: "center" }}>
+        <Pagination
+          page={page}
+          count={totalPages}
+          onChange={(_, value) =>
+            setPage(value)
+          }
+        />
+
+      </Box>
+
     </Box>
+
   );
 }
